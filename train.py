@@ -1,5 +1,5 @@
 import argparse
-import math
+import wandb
 import numpy as np
 from torch.utils.data import DataLoader
 from tqdm.auto import tqdm
@@ -12,12 +12,12 @@ def parse_args():
     parser.add_argument(
         "--max_source_length",
         type=str,
-        default=1024,
+        default=256,
     )
     parser.add_argument(
         "--max_target_length",
         type=str,
-        default=128,
+        default=64,
     )
     parser.add_argument(
         "--preprocessing_num_workers",
@@ -64,8 +64,16 @@ def parse_args():
 
 def main():
     args = parse_args()
+    wandb.init(project="ADL", entity="kyle65463")
     tokenizer = T5Tokenizer.from_pretrained("t5-small")
     model = T5ForConditionalGeneration.from_pretrained("t5-small")
+    wandb.watch(model)
+    wandb.config = {
+        "learning_rate": args.learning_rate,
+        "epochs": args.num_epochs,
+        "batch_size": args.batch_size,
+        "weight_decay": args.weight_decay
+    }
 
     def preprocess_function(examples):
         inputs = examples['maintext']
@@ -128,8 +136,9 @@ def main():
         model, optimizer, train_dataloader
     )
 
+    real_step = 0
     for epoch in range(args.num_epochs):
-        print(f"epoch {epoch + 1}:")
+        print(f"Epoch {epoch + 1}:")
         train_loss = []
         model.train()
         for step, batch in enumerate(tqdm(train_dataloader)):
@@ -137,13 +146,17 @@ def main():
             loss = outputs.loss
             train_loss.append(loss.detach().float())
             loss = loss / args.gradient_accumulation_steps
-
             accelerator.backward(loss)
+
             if ((step + 1) % args.gradient_accumulation_steps == 0) or (step == len(train_dataloader) - 1):
+                real_step += 1
                 optimizer.step()
                 optimizer.zero_grad()
+                wandb.log({'loss': loss.item()}, step=real_step)
+
         train_loss = np.mean(train_loss)
         print(f"train loss: {train_loss:.4f}")
+        wandb.log({'average_epoch_loss': loss.item()}, step=real_step)
 
     unwrapped_model = accelerator.unwrap_model(model)
     unwrapped_model.save_pretrained(
