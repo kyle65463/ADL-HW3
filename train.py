@@ -11,17 +11,17 @@ def parse_args():
     parser = argparse.ArgumentParser(description="Finetune a transformers model on a summarization task")
     parser.add_argument(
         "--max_source_length",
-        type=str,
+        type=int,
         default=256,
     )
     parser.add_argument(
         "--max_target_length",
-        type=str,
+        type=int,
         default=64,
     )
     parser.add_argument(
         "--preprocessing_num_workers",
-        type=str,
+        type=int,
         default=None,
     )
     parser.add_argument(
@@ -42,7 +42,7 @@ def parse_args():
     parser.add_argument(
         "--num_epochs", 
         type=int, 
-        default=2,
+        default=0,
     )
     parser.add_argument(
         "--output_dir", 
@@ -68,6 +68,7 @@ def main():
     tokenizer = T5Tokenizer.from_pretrained("t5-small")
     model = T5ForConditionalGeneration.from_pretrained("t5-small")
     wandb.watch(model)
+    wandb.login()
     wandb.config = {
         "learning_rate": args.learning_rate,
         "epochs": args.num_epochs,
@@ -153,10 +154,6 @@ def main():
                 optimizer.step()
                 optimizer.zero_grad()
                 wandb.log({'loss': loss.item()}, step=real_step)
-
-        train_loss = np.mean(train_loss)
-        print(f"train loss: {train_loss:.4f}")
-        wandb.log({'average_epoch_loss': loss.item()}, step=real_step)
 
     unwrapped_model = accelerator.unwrap_model(model)
     unwrapped_model.save_pretrained(
