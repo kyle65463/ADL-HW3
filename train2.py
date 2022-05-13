@@ -365,7 +365,7 @@ def main():
             data_files["train"] = args.train_file
         if args.validation_file is not None:
             data_files["validation"] = args.validation_file
-        extension = args.train_file.split(".")[-1]
+        extension = "json"
         raw_datasets = load_dataset(extension, data_files=data_files)
     # See more about loading any type of standard or custom dataset (from files, python dict, pandas DataFrame, etc) at
     # https://huggingface.co/docs/datasets/loading_datasets.html.
