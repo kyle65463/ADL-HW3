@@ -513,8 +513,8 @@ def main():
     )
 
     # Prepare everything with our `accelerator`.
-    model, optimizer, train_dataloader, eval_dataloader, lr_scheduler = accelerator.prepare(
-        model, optimizer, train_dataloader, eval_dataloader, lr_scheduler
+    model, optimizer, train_dataloader, lr_scheduler = accelerator.prepare(
+        model, optimizer, train_dataloader, lr_scheduler
     )
 
     # We need to recalculate our total training steps as the size of the training dataloader may have changed.
