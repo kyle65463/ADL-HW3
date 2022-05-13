@@ -293,10 +293,10 @@ def parse_args():
         raise ValueError("Need either a dataset name or a training/validation file.")
     else:
         if args.train_file is not None:
-            extension = args.train_file.split(".")[-1]
+            extension = "json"
             assert extension in ["csv", "json"], "`train_file` should be a csv or a json file."
         if args.validation_file is not None:
-            extension = ".json"
+            extension = "json"
             assert extension in ["csv", "json"], "`validation_file` should be a csv or a json file."
 
     if args.push_to_hub:
