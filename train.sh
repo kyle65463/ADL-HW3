@@ -8,7 +8,7 @@
 #         --num_epochs 10 \
 #         --output_dir /tmp2/b08902003/output \
 #         --gradient_accumulation_steps 8
-python3 train2.py \
+CUDA_VISIBLE_DEVICES=0 python3 train2.py \
         --model_name_or_path t5-small \
         --train_file data/train.jsonl \
         --text_column maintext \
