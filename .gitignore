@@ -1,2 +1,5 @@
 data/
 wandb/
+*.zip
+tw_rouge/
+output/
