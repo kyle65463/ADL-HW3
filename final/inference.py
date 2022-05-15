@@ -17,17 +17,17 @@ def parse_args():
     parser = ArgumentParser()
     parser.add_argument(
         "--input_file",
-        type=Path,
+        type=str,
         default="./data/public.jsonl",
     )
     parser.add_argument(
         "--model_path",
-        type=Path,
+        type=str,
         default="./model/",
     )
     parser.add_argument(
         "--output_file",
-        type=Path, 
+        type=str, 
         default="./test.jsonl"
     )
     parser.add_argument("--max_source_len", type=int, default=256)
@@ -47,11 +47,11 @@ def main():
     accelerator = Accelerator()
     print(accelerator.device)
     config = {
-        "greedy": {"do_sample": False, "num_beams": 1},
-        "beam": {"do_sample": False, "num_beams": args.num_beams},
-        "top_k": {"top_k": args.top_k},
-        "top_p": {"top_p": args.top_p},
-        "temparature": {"temperature": args.temperature},
+        "do_sample": args.do_sample,
+        "num_beams": args.num_beams,
+        "top_k": args.top_k,
+        "top_p": args.top_p,
+        "temperature": args.temperature,
     }
     print(config)
 
