@@ -64,8 +64,8 @@ def main():
         )
         return model_inputs
 
-    tokenizer = AutoTokenizer.from_pretrained(args.ckpt_dir)
-    model = AutoModelForSeq2SeqLM.from_pretrained(args.ckpt_dir)
+    tokenizer = AutoTokenizer.from_pretrained(args.model_path)
+    model = AutoModelForSeq2SeqLM.from_pretrained(args.model_path)
     raw_datasets = load_dataset("json", data_files={"test": args.input_file})
     column_names = raw_datasets["test"].column_names
     ids = raw_datasets["test"]["id"]
